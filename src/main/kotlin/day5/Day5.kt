@@ -15,7 +15,7 @@ fun main() {
         if (TEST) File("src/main/kotlin/day5/test-input.txt").readLines()
         else File("src/main/kotlin/day5/input.txt").readLines()
     val coordinates = createCoordinates(input)
-//    dayFivePuzzleOne(coordinates)
+    dayFivePuzzleOne(coordinates)
     dayFivePuzzleTwo(coordinates)
 }
 

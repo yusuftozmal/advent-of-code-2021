@@ -1,8 +1,6 @@
-package day6
+package day7
 
 import java.io.File
-import kotlin.math.max
-import kotlin.math.min
 
 private const val TEST = false
 
@@ -15,30 +13,40 @@ fun main() {
         input.forEachIndexed { i, number -> this[i] = number }
     }
 
-    daySevenPuzzleOne(crabPositions)
-//    daySixPuzzleTwo(amountFishPerDay, DAYS_256)
+    daySevenPuzzleOne(crabPositions, FuelCost.INCREASING_WITH_ONE_PER_STEP)
 }
 
-fun daySevenPuzzleOne(crabPositions: IntArray) {
-//    val maxLeftPosition = crabPositions.minOrNull()
-//    val maxRightPosition = crabPositions.maxOrNull()
-//    var usedFuel = IntArray(crabPositions.size)
+fun daySevenPuzzleOne(crabPositions: IntArray, fuelCost: FuelCost) {
     val leastFuelUsedPosition = IntArray(2)
     val maxPosition = crabPositions.maxOrNull() ?: 0
     val minPosition = crabPositions.minOrNull() ?: 0
 
-    for (i in minPosition.rangeTo(maxPosition)) {
+    for (startPosition in minPosition.rangeTo(maxPosition)) {
         var fuelSum = 0
-        crabPositions.forEach { currentPosition ->
-            val rightCrab = max(i, currentPosition)
-            val leftCrab = min(i, currentPosition)
-            fuelSum += rightCrab - leftCrab
+        crabPositions.forEach { destinationPosition ->
+            fuelSum += calculateFuelCost(startPosition, destinationPosition, fuelCost)
         }
-        if (i == 0 || fuelSum < leastFuelUsedPosition[1]) {
-            leastFuelUsedPosition[0] = i
+        if (startPosition == 0 || fuelSum < leastFuelUsedPosition[1]) {
+            leastFuelUsedPosition[0] = startPosition
             leastFuelUsedPosition[1] = fuelSum
         }
-        println("Fuel sum for position $i is $fuelSum")
+        println("Fuel sum for position $startPosition is $fuelSum")
     }
-    println("Position ${leastFuelUsedPosition[0]} requires least fuel (${leastFuelUsedPosition[1]})")
+    println("Least used fuel is ${leastFuelUsedPosition[1]} and it is on position ${leastFuelUsedPosition[0]}")
+}
+
+private fun calculateFuelCost(startPosition: Int, destinationPosition: Int, fuelCost: FuelCost): Int {
+    val moves =
+        if (startPosition >= destinationPosition) startPosition - destinationPosition
+        else destinationPosition - startPosition
+
+    return when (fuelCost) {
+        FuelCost.ONE_PER_STEP -> moves
+        FuelCost.INCREASING_WITH_ONE_PER_STEP -> (moves * (1 + moves)) / 2 //Arithmetic progression formula
+    }
+}
+
+enum class FuelCost {
+    ONE_PER_STEP,
+    INCREASING_WITH_ONE_PER_STEP
 }
